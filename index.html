@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Estratégico: Expediciones Creativas</title>
+    
+    <!-- Chosen Palette: Strategic Blueprint (White, Light Gray, Agency Blue #0052cc, with accent colors for phases) -->
+    <!-- Application Structure Plan: A single-page dashboard structure with top navigation (Inicio, FODA, Plan de Acción, Inversión, Conclusión). This non-linear approach allows the client to explore the analysis at their own pace, focusing on specific areas of interest. Interactive elements like clickable FODA quadrants and phased plan tabs break down complex information into digestible chunks, improving comprehension and engagement over a static presentation. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: SWOT Analysis -> Goal: Compare internal/external factors -> Viz/Method: Interactive 4-quadrant grid (HTML/CSS/JS) -> Interaction: Click on a quadrant to display details -> Justification: Breaks down the dense analysis into focused, digestible parts, preventing information overload. -> Library/Method: Vanilla JS & Tailwind.
+        - Report Info: 3-Phase Action Plan -> Goal: Organize a complex, multi-step plan -> Viz/Method: Interactive tabs for each phase -> Interaction: Click on a phase tab to view its specific objectives and actions -> Justification: Transforms a long list into a clear, manageable, and sequential plan. -> Library/Method: Vanilla JS & Tailwind.
+        - Report Info: Resource Allocation Shift (95/5 to 50/50) -> Goal: Compare a current state vs. a proposed state -> Viz/Method: Side-by-side doughnut charts -> Interaction: Charts animate on load; tooltips on hover -> Justification: A powerful, instant visual representation of the required strategic shift, more impactful than text alone. -> Library/Method: Chart.js (Canvas).
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #0052cc;
+            border-bottom-color: #0052cc;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .foda-quadrant {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .foda-quadrant.active {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            background-color: #0052cc;
+            color: white;
+        }
+        .foda-quadrant.active h3 {
+            color: white;
+        }
+        .plan-tab {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .plan-tab.active {
+            background-color: #0052cc;
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-gray-800">
+                <span class="text-[#0052cc]">EC</span>/Dashboard
+            </h1>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#inicio" class="nav-link text-gray-600 font-semibold pb-1 active">Inicio</a>
+                <a href="#foda" class="nav-link text-gray-600 font-semibold pb-1">Diagnóstico FODA</a>
+                <a href="#plan" class="nav-link text-gray-600 font-semibold pb-1">Plan de Acción</a>
+                <a href="#inversion" class="nav-link text-gray-600 font-semibold pb-1">Inversión Clave</a>
+                <a href="#conclusion" class="nav-link text-gray-600 font-semibold pb-1">Conclusión</a>
+            </div>
+             <div class="md:hidden">
+                <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="#inicio">Inicio</option>
+                    <option value="#foda">Diagnóstico FODA</option>
+                    <option value="#plan">Plan de Acción</option>
+                    <option value="#inversion">Inversión Clave</option>
+                    <option value="#conclusion">Conclusión</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="inicio" class="content-section active min-h-[70vh] flex items-center">
+            <div class="w-full text-center">
+                <p class="text-lg font-semibold text-[#0052cc]">ANÁLISIS ESTRATÉGICO DE MARKETING</p>
+                <h2 class="text-4xl md:text-6xl font-extrabold text-gray-900 mt-2 mb-4">Expediciones Creativas</h2>
+                <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 mb-8">Un análisis interactivo para desbloquear el crecimiento y maximizar el impacto. Este dashboard transforma nuestro reporte estratégico en una herramienta dinámica para explorar hallazgos y planes de acción.</p>
+                <div class="border-l-4 border-[#0052cc] bg-white p-6 rounded-r-lg max-w-3xl mx-auto shadow-lg">
+                    <h3 class="text-xl font-bold text-left mb-2">Veredicto Ejecutivo:</h3>
+                    <p class="text-2xl font-semibold text-gray-700 text-left">"Un diamante en bruto. Un producto excepcional con un alma y una identidad visual magistrales, pero con una debilidad crítica: una visibilidad de mercado casi inexistente."</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="foda" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Diagnóstico FODA</h2>
+                <p class="mt-2 text-lg text-gray-600 max-w-2xl mx-auto">Esta es la fotografía completa de su negocio. Haga clic en cada cuadrante para explorar los factores internos y externos que definen su situación actual y revelan oportunidades estratégicas.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div id="foda-fortalezas" class="foda-quadrant bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500 active">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">✅ Fortalezas</h3>
+                        <p>Atributos internos que dan una ventaja.</p>
+                    </div>
+                    <div id="foda-oportunidades" class="foda-quadrant bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">🚀 Oportunidades</h3>
+                        <p>Factores externos para capitalizar.</p>
+                    </div>
+                    <div id="foda-debilidades" class="foda-quadrant bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">❌ Debilidades</h3>
+                        <p>Características internas que limitan.</p>
+                    </div>
+                    <div id="foda-amenazas" class="foda-quadrant bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">⚠️ Amenazas</h3>
+                        <p>Retos externos que pueden afectar.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg min-h-[300px]">
+                    <h3 id="foda-detail-title" class="text-2xl font-bold mb-4"></h3>
+                    <ul id="foda-detail-list" class="space-y-2 text-gray-700 list-disc list-inside">
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="plan" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Plan de Acción Estratégico</h2>
+                <p class="mt-2 text-lg text-gray-600 max-w-2xl mx-auto">Una hoja de ruta en tres fases para convertir el potencial en resultados tangibles. Seleccione una fase para ver los objetivos y acciones clave recomendadas.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-center mb-8 rounded-lg shadow-md p-2 bg-gray-200 max-w-xl mx-auto">
+                <button id="plan-tab-1" class="plan-tab flex-1 py-3 px-4 rounded-md font-semibold active">Fase 1: Triage</button>
+                <button id="plan-tab-2" class="plan-tab flex-1 py-3 px-4 rounded-md font-semibold">Fase 2: Momentum</button>
+                <button id="plan-tab-3" class="plan-tab flex-1 py-3 px-4 rounded-md font-semibold">Fase 3: Crecimiento</button>
+            </div>
+            <div id="plan-content" class="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+            </div>
+        </section>
+
+        <section id="inversion" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">La Inversión Clave: De Invisible a Indispensable</h2>
+                <p class="mt-2 text-lg text-gray-600 max-w-3xl mx-auto">La prioridad número uno es redirigir recursos. El producto ya es excelente; ahora debemos invertir en el desarrollo del mercado. Esta visualización compara la asignación de esfuerzo actual con la propuesta para alcanzar el éxito.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <h3 class="text-xl font-bold mb-4">Estado Actual</h3>
+                    <div class="chart-container">
+                        <canvas id="chart-actual"></canvas>
+                    </div>
+                    <p class="mt-4 text-gray-600">Un enfoque casi total en el producto deja al marketing sin recursos para atraer clientes.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <h3 class="text-xl font-bold mb-4">Estado Propuesto</h3>
+                    <div class="chart-container">
+                        <canvas id="chart-propuesto"></canvas>
+                    </div>
+                     <p class="mt-4 text-gray-600">Un balance equitativo permite que el excelente producto sea descubierto por su público ideal.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="content-section">
+            <div class="max-w-4xl mx-auto text-center">
+                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Veredicto Final y Próximos Pasos</h2>
+                <p class="text-lg text-gray-600 mb-8">El desafío de Expediciones Creativas no es un problema de calidad, valor o identidad. Es, fundamentalmente, un problema de distribución y comunicación. Ya tienen el "qué" y el "porqué" resueltos de manera brillante.</p>
+                <div class="border-l-4 border-[#0052cc] bg-white p-8 rounded-r-lg shadow-lg my-8">
+                    <p class="text-2xl font-semibold text-gray-700 text-left">
+                        "Ahora es el momento de ejecutar el 'cómo' y el 'quién' con la misma excelencia."
+                    </p>
+                </div>
+                 <p class="text-lg text-gray-600 mb-8">Al implementar este plan de acción, podemos transformar esta joya escondida en una marca líder y reconocida en su nicho. Estamos listos para poner en marcha la Fase 1 y empezar a generar resultados.</p>
+                <a href="mailto:acteck664@icloud.com" class="inline-block bg-[#0052cc] text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-[#0041a3] transition-colors">Discutamos los detalles de la campaña de Meta Ads</a>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+
+            const fodaData = {
+                fortalezas: {
+                    title: '✅ Fortalezas',
+                    points: [
+                        'Concepto y filosofía únicos (Bruno Munari)',
+                        'Identidad visual profesional y coherente',
+                        'Oferta de valor clara (costos, fechas, lugar)',
+                        'Equipo cualificado y transparente',
+                        'Ubicación estratégica que refuerza la marca'
+                    ]
+                },
+                debilidades: {
+                    title: '❌ Debilidades',
+                    points: [
+                        '<strong>Alcance y visibilidad extremadamente bajos</strong>',
+                        'Dependencia de un único canal (Instagram)',
+                        'Falta de prueba social (pocos seguidores/interacción)'
+                    ]
+                },
+                oportunidades: {
+                    title: '🚀 Oportunidades',
+                    points: [
+                        'Marketing de nicho hipersegmentado (Meta Ads)',
+                        'Alianzas estratégicas (blogs, escuelas, influencers)',
+                        'Marketing de contenidos de alto valor',
+                        'Generación de urgencia con descuentos'
+                    ]
+                },
+                amenazas: {
+                    title: '⚠️ Amenazas',
+                    points: [
+                        'Competencia feroz y establecida',
+                        'Factor tiempo (fechas próximas)',
+                        'Barrera económica del costo del curso'
+                    ]
+                }
+            };
+
+            const planData = {
+                '1': {
+                    title: 'Fase 1: Triage de Emergencia',
+                    objective: '<strong>Objetivo:</strong> Generar inscripciones AHORA. (Próximas 1-2 semanas)',
+                    actions: [
+                        '<strong>Inversión en Meta Ads:</strong> Campaña hipersegmentada geográficamente y por intereses.',
+                        '<strong>Activar Alianzas:</strong> Colaboraciones pagadas y por comisión con influencers y blogs de crianza.',
+                        '<strong>Campaña de Urgencia:</strong> Comunicación agresiva sobre la fecha límite del descuento.'
+                    ]
+                },
+                '2': {
+                    title: 'Fase 2: Construcción de Momentum',
+                    objective: '<strong>Objetivo:</strong> Capitalizar el éxito inicial y construir activos de marketing. (Mediano Plazo)',
+                    actions: [
+                        '<strong>Recopilar Prueba Social:</strong> Grabar testimonios y contenido de alta calidad durante el curso.',
+                        '<strong>Crear Base de Datos:</strong> Capturar emails a cambio de contenido de valor (guías, checklists).',
+                        '<strong>Expandir Contenido:</strong> Demostrar expertise con tutoriales, reels y artículos de blog.'
+                    ]
+                },
+                '3': {
+                    title: 'Fase 3: Sostenibilidad y Crecimiento',
+                    objective: '<strong>Objetivo:</strong> Consolidar la marca y diversificar ingresos. (Largo Plazo)',
+                    actions: [
+                        '<strong>Diversificar Oferta:</strong> Crear talleres de fin de semana, cursos online o kits creativos.',
+                        '<strong>Construir Web Propia:</strong> Desarrollar un sitio web con SEO para captación orgánica.',
+                        '<strong>Liderazgo de Opinión:</strong> Posicionar a las talleristas como expertas a través de charlas y colaboraciones.'
+                    ]
+                }
+            };
+            
+            function showSection(hash) {
+                sections.forEach(section => {
+                    if ('#' + section.id === hash) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === hash) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+                
+                mobileNav.value = hash;
+                
+                if (hash === '#inversion') {
+                    initCharts();
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const hash = this.getAttribute('href');
+                    history.pushState(null, null, hash);
+                    showSection(hash);
+                });
+            });
+            
+            mobileNav.addEventListener('change', function(e) {
+                 const hash = this.value;
+                 history.pushState(null, null, hash);
+                 showSection(hash);
+            });
+
+            window.addEventListener('popstate', () => {
+                showSection(window.location.hash || '#inicio');
+            });
+            
+            showSection(window.location.hash || '#inicio');
+
+            const fodaQuadrants = document.querySelectorAll('.foda-quadrant');
+            const fodaDetailTitle = document.getElementById('foda-detail-title');
+            const fodaDetailList = document.getElementById('foda-detail-list');
+
+            function updateFodaDetails(key) {
+                const data = fodaData[key];
+                fodaDetailTitle.innerHTML = data.title;
+                fodaDetailList.innerHTML = data.points.map(point => `<li>${point}</li>`).join('');
+                
+                fodaQuadrants.forEach(q => {
+                    if(q.id === `foda-${key}`) {
+                        q.classList.add('active');
+                    } else {
+                        q.classList.remove('active');
+                    }
+                });
+            }
+
+            fodaQuadrants.forEach(quadrant => {
+                quadrant.addEventListener('click', function() {
+                    const key = this.id.split('-')[1];
+                    updateFodaDetails(key);
+                });
+            });
+
+            updateFodaDetails('fortalezas');
+
+            const planTabs = document.querySelectorAll('.plan-tab');
+            const planContent = document.getElementById('plan-content');
+
+            function updatePlanContent(phase) {
+                const data = planData[phase];
+                planContent.innerHTML = `
+                    <h3 class="text-2xl font-bold mb-2">${data.title}</h3>
+                    <p class="text-gray-600 mb-6">${data.objective}</p>
+                    <ul class="space-y-4 text-gray-700 list-disc list-inside">
+                        ${data.actions.map(action => `<li>${action}</li>`).join('')}
+                    </ul>
+                `;
+                planTabs.forEach(tab => {
+                    if (tab.id === `plan-tab-${phase}`) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+            }
+
+            planTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const phase = this.id.split('-')[2];
+                    updatePlanContent(phase);
+                });
+            });
+
+            updatePlanContent('1');
+            
+            let chartActualInstance, chartPropuestoInstance;
+
+            function initCharts() {
+                if (chartActualInstance) chartActualInstance.destroy();
+                if (chartPropuestoInstance) chartPropuestoInstance.destroy();
+
+                const dataActual = {
+                    labels: ['Producto', 'Marketing'],
+                    datasets: [{
+                        data: [95, 5],
+                        backgroundColor: ['#a0aec0', '#e53e3e'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                    }]
+                };
+
+                const dataPropuesto = {
+                    labels: ['Producto', 'Marketing'],
+                    datasets: [{
+                        data: [50, 50],
+                        backgroundColor: ['#a0aec0', '#48bb78'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                    }]
+                };
+
+                const options = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                const ctxActual = document.getElementById('chart-actual').getContext('2d');
+                chartActualInstance = new Chart(ctxActual, { type: 'doughnut', data: dataActual, options: options });
+
+                const ctxPropuesto = document.getElementById('chart-propuesto').getContext('2d');
+                chartPropuestoInstance = new Chart(ctxPropuesto, { type: 'doughnut', data: dataPropuesto, options: options });
+            }
+        });
+    </script>
+
+</body>
+</html>
